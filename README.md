@@ -2,6 +2,10 @@
 
 The IdleChiller Twitch Extension allows streamers and viewers on Twitch to interact with the IdleChiller game, providing a lo-fi idling grinding experience. The project consists of three main parts: the game engine powered by Godot, a Flask backend, and a React-based frontend extension. Here's a breakdown of the project structure and how to get it up and running.
 
+<p align="center">
+  <img src="logo.png" width="300" height="300" />
+</p>
+
 ## Project Structure
 
 1. **TwitchBotGodot**
