@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_2460s"]
 [ext_resource type="Texture2D" uid="uid://cmga2u7plt41p" path="res://asset/img/bg/1b521506-6569-4ccb-994d-cfa2544f61e2.png" id="2_thinh"]
-[ext_resource type="Script" path="res://scenes/main/WebSocket.gd" id="3_djldm"]
 [ext_resource type="PackedScene" uid="uid://mc7kyf5tg1x0" path="res://scenes/whale/whale.tscn" id="3_upha2"]
+[ext_resource type="Script" path="res://scenes/main/websockets/WebSocket.gd" id="3_xhqvk"]
 [ext_resource type="Script" path="res://scenes/main/enemySpawner.gd" id="5_nbjdi"]
 [ext_resource type="PackedScene" uid="uid://03hc1p1xva83" path="res://scenes/enemies/enemybase/enemybase.tscn" id="6_bf15p"]
 
@@ -28,7 +28,7 @@ grow_vertical = 2
 texture = ExtResource("2_thinh")
 
 [node name="WebSocket" type="Node" parent="."]
-script = ExtResource("3_djldm")
+script = ExtResource("3_xhqvk")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

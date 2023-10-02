@@ -1,6 +1,7 @@
 asset/twitch/music.mp3
 icon.svg.import
 .env
+auth
 # Godot 4+ specific ignores
 .godot/
 

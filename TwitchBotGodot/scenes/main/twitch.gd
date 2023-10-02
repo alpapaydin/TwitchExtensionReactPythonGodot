@@ -1,4 +1,38 @@
-extends Node
+extends Gift
+
+func _ready() -> void:
+	cmd_no_permission.connect(no_permission)
+	chat_message.connect(on_chat)
+	event.connect(on_event)
+	unhandled_message.connect(unhandledMessage)
+	# I use a file in the working directory to store auth data
+	# so that I don't accidentally push it to the repository.
+	# Replace this or create a auth file with 3 lines in your
+	# project directory:
+	# <client_id>
+	# <client_secret>
+	# <initial channel>
+	var authfile := FileAccess.open("user://auth", FileAccess.READ)
+	client_id = authfile.get_line()
+	client_secret = authfile.get_line()
+	var initial_channel = authfile.get_line()
+
+	# When calling this method, a browser will open.
+	# Log in to the account that should be used.
+	await(authenticate(client_id, client_secret))
+	var success = await(connect_to_irc())
+	if (success):
+		request_caps()
+		join_channel(initial_channel)
+	await(connect_to_eventsub())
+	# Refer to https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/ for details on
+	# what events exist, which API versions are available and which conditions are required.
+	# Make sure your token has all required scopes for the event.
+	subscribe_event("channel.follow", 2, {"broadcaster_user_id": user_id, "moderator_user_id": user_id})
+###
+
+func unhandledMessage(message, _tags):
+	print("TEST::: "+message)
 
 
 var shopItems = {
@@ -58,6 +92,25 @@ func checkRegisterPlayer(player):
 			}
 		}
 		
+func on_event(type : String, data : Dictionary) -> void:
+	match(type):
+		"channel.follow":
+			print("%s followed your channel!" % data["user_name"])
+
+func on_chat(data : SenderData, msg : String) -> void:
+	if msg[0] == "!":
+		var modified_str = msg.lstrip("!").split(" ", true, 1)
+		if !modified_str.size()>1:
+			modified_str.append("null")
+		var response = gotMessage(data.user+"."+modified_str[0]+"."+modified_str[1])
+		chat(response)
+		print(data.user+"."+modified_str[0]+"."+modified_str[1])
+		
+	#%ChatContainer.put_chat(data, msg)
+
+func no_permission(_cmd_info : CommandInfo) -> void:
+	chat("NO PERMISSION!")
+
 #RECEIVE FROM TWITCH BOT
 func gotMessage(msg):
 	var data = msg.split(".", 2)
@@ -72,6 +125,8 @@ func gotMessage(msg):
 			if !payCommandCost(sender, command):
 				return sender+" you need "+str(command_cost[command])+"$ to "+command
 			match command:
+				"chatall":
+					chatAll(chatters)
 				"sa":
 					popup("as "+sender)
 					return "as "+sender
@@ -106,6 +161,7 @@ func gotMessage(msg):
 				"reisler":
 					return get_top_players("coin")
 				"speak":
+					Speak.text(arg)
 					return "ok"
 				"speakeng":
 					return "ok"
@@ -123,16 +179,12 @@ func gotMessage(msg):
 						"list":
 							return listBusinesses()
 						_:
-							return "Commands: !biz list, !biz buy (name), !biz sell (name), !biz upgrade(name), !biz info (name)"
+							return "Business Commands: !biz list, !biz buy (name), !biz sell (name), !biz upgrade(name), !biz info (name)"
 		2:
 			#pass datac
 			var tag = data[0]
 			var content = data[1]
 			match tag:
-				"chatterData":
-					var spawner = chatall.instantiate()
-					spawner.chatterData = strtoArray(content)
-					add_child(spawner)
 				"subscribed":
 					userSubscribed(content)
 		1:
@@ -141,6 +193,11 @@ func gotMessage(msg):
 				"newmessage":
 					whale.flipandmove()
 	return "OK"
+
+func chatAll(data):
+	var spawner = chatall.instantiate()
+	spawner.chatterData = data
+	add_child(spawner)
 
 func strtoArray(s: String) -> Array:
 	# Remove the outer brackets
