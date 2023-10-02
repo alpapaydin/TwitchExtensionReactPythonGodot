@@ -143,12 +143,12 @@ func _init():
 				DirAccess.make_dir_recursive_absolute(disk_cache_path + "/" + key)
 
 # Authenticate to authorize GIFT to use your account to process events and messages.
-func authenticate(client_id, client_secret) -> void:
-	self.client_id = client_id
-	self.client_secret = client_secret
+func authenticate(cid, csecret) -> void:
+	self.client_id = cid
+	self.client_secret = csecret
 	print("Checking token...")
 	if (FileAccess.file_exists("user://gift/auth/user_token")):
-		var file : FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, client_secret)
+		var file : FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, csecret)
 		token = JSON.parse_string(file.get_as_text())
 		if (token.has("scope") && scopes.size() != 0):
 			if (scopes.size() != token["scope"].size()):
@@ -237,20 +237,20 @@ func get_token() -> void:
 				break
 		OS.delay_msec(100)
 
-func send_response(peer : StreamPeer, response : String, body : PackedByteArray) -> void:
-	peer.put_data(("HTTP/1.1 %s\r\n" % response).to_utf8_buffer())
-	peer.put_data("Server: GIFT (Godot Engine)\r\n".to_utf8_buffer())
-	peer.put_data(("Content-Length: %d\r\n"% body.size()).to_utf8_buffer())
-	peer.put_data("Connection: close\r\n".to_utf8_buffer())
-	peer.put_data("Content-Type: text/plain; charset=UTF-8\r\n".to_utf8_buffer())
-	peer.put_data("\r\n".to_utf8_buffer())
-	peer.put_data(body)
+func send_response(apeer : StreamPeer, response : String, body : PackedByteArray) -> void:
+	apeer.put_data(("HTTP/1.1 %s\r\n" % response).to_utf8_buffer())
+	apeer.put_data("Server: GIFT (Godot Engine)\r\n".to_utf8_buffer())
+	apeer.put_data(("Content-Length: %d\r\n"% body.size()).to_utf8_buffer())
+	apeer.put_data("Connection: close\r\n".to_utf8_buffer())
+	apeer.put_data("Content-Type: text/plain; charset=UTF-8\r\n".to_utf8_buffer())
+	apeer.put_data("\r\n".to_utf8_buffer())
+	apeer.put_data(body)
 
 # If the token is valid, returns the username of the token bearer.
-func is_token_valid(token : String) -> String:
+func is_token_valid(atoken : String) -> String:
 	var request : HTTPRequest = HTTPRequest.new()
 	add_child(request)
-	request.request("https://id.twitch.tv/oauth2/validate", [USER_AGENT, "Authorization: OAuth " + token])
+	request.request("https://id.twitch.tv/oauth2/validate", [USER_AGENT, "Authorization: OAuth " + atoken])
 	var data = await(request.request_completed)
 	request.queue_free()
 	if (data[1] == 200):
@@ -409,10 +409,10 @@ func request_caps(caps : String = "twitch.tv/commands twitch.tv/tags twitch.tv/m
 	send("CAP REQ :" + caps)
 
 # Sends a String to Twitch.
-func send(text : String, token : bool = false) -> void:
+func send(text : String, atoken : bool = false) -> void:
 	websocket.send_text(text)
 	if(OS.is_debug_build()):
-		if(!token):
+		if(!atoken):
 			print("< " + text.strip_edges(false))
 		else:
 			print("< PASS oauth:******************************")
@@ -453,10 +453,10 @@ func whisper_by_uid(message : String, target_id : String) -> int:
 	return reply[0]
 
 # Returns the response as Dictionary. If it failed, "error" will be present in the Dictionary.
-func user_data_by_name(username : String) -> Dictionary:
+func user_data_by_name(ausername : String) -> Dictionary:
 	var request : HTTPRequest = HTTPRequest.new()
 	add_child(request)
-	request.request("https://api.twitch.tv/helix/users?login=" + username, [USER_AGENT, "Authorization: Bearer " + token["access_token"], "Client-Id:" + client_id, "Content-Type: application/json"], HTTPClient.METHOD_GET)
+	request.request("https://api.twitch.tv/helix/users?login=" + ausername, [USER_AGENT, "Authorization: Bearer " + token["access_token"], "Client-Id:" + client_id, "Content-Type: application/json"], HTTPClient.METHOD_GET)
 	var reply : Array = await(request.request_completed)
 	var response : Dictionary = JSON.parse_string(reply[3].get_string_from_utf8())
 	request.queue_free()
@@ -648,14 +648,14 @@ func handle_message(message : String, tags : Dictionary) -> void:
 		_:
 			unhandled_message.emit(message, tags)
 
-func handle_command(sender_data : SenderData, msg : PackedStringArray, whisper : bool = false) -> void:
+func handle_command(sender_data : SenderData, msg : PackedStringArray, awhisper : bool = false) -> void:
 	if(command_prefixes.has(msg[0].substr(1, 1))):
 		var command : String  = msg[0].right(-2)
 		var cmd_data : CommandData = commands.get(command)
 		if(cmd_data):
-			if(whisper == true && cmd_data.where & WhereFlag.WHISPER != WhereFlag.WHISPER):
+			if(awhisper == true && cmd_data.where & WhereFlag.WHISPER != WhereFlag.WHISPER):
 				return
-			elif(whisper == false && cmd_data.where & WhereFlag.CHAT != WhereFlag.CHAT):
+			elif(awhisper == false && cmd_data.where & WhereFlag.CHAT != WhereFlag.CHAT):
 				return
 			var args = "" if msg.size() == 1 else msg[1]
 			var arg_ary : PackedStringArray = PackedStringArray() if args == "" else args.split(" ")
@@ -670,9 +670,9 @@ func handle_command(sender_data : SenderData, msg : PackedStringArray, whisper :
 					print_debug("No Permission for command!")
 					return
 			if(arg_ary.size() == 0):
-				cmd_data.func_ref.call(CommandInfo.new(sender_data, command, whisper))
+				cmd_data.func_ref.call(CommandInfo.new(sender_data, command, awhisper))
 			else:
-				cmd_data.func_ref.call(CommandInfo.new(sender_data, command, whisper), arg_ary)
+				cmd_data.func_ref.call(CommandInfo.new(sender_data, command, awhisper), arg_ary)
 
 func get_perm_flag_from_tags(tags : Dictionary) -> int:
 	var flag = 0

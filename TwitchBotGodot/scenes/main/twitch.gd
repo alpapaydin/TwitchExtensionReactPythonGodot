@@ -420,13 +420,18 @@ func pickupCoin(player, amount = 1):
 
 func getExp(player, amount = 1):
 	var multiplier = players[player]["upgrades"]["exp"]
-	var toNextLevel =  pow(players[player]["level"], 2) * 31
 	var gotExp = amount * multiplier
 	players[player]["exp"] += gotExp
-	if players[player]["exp"] >= toNextLevel:
-		players[player]["exp"] -= toNextLevel
-		players[player]["level"] += 1
-		print("level up")
+	
+	while true:
+		var toNextLevel = pow(players[player]["level"], 2) * 31
+		if players[player]["exp"] >= toNextLevel:
+			players[player]["exp"] -= toNextLevel
+			players[player]["level"] += 1
+			print("level up")
+		else:
+			break
+	
 	return gotExp
 
 func buyUpgrade(player, upgrade):
