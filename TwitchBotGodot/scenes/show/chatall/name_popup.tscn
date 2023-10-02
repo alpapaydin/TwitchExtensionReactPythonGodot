@@ -1,0 +1,97 @@
+[gd_scene load_steps=5 format=3 uid="uid://b721c4gsnwa1p"]
+
+[ext_resource type="AudioStream" uid="uid://0hik7ibdhovg" path="res://asset/sfx/pop.ogg" id="1_i4h5s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tbs6p"]
+bg_color = Color(0.811765, 0.811765, 0.811765, 0.811765)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Animation" id="Animation_3g6s2"]
+resource_name = "pop"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -100)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.9, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_apfnd"]
+_data = {
+"pop": SubResource("Animation_3g6s2")
+}
+
+[node name="NamePopup" type="Node2D"]
+
+[node name="NamePopup" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 113.0
+offset_bottom = 58.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_tbs6p")
+
+[node name="Label" type="Label" parent="NamePopup"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 44
+text = "Baba"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="NamePopup"]
+autoplay = "pop"
+libraries = {
+"": SubResource("AnimationLibrary_apfnd")
+}
+
+[node name="SFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("1_i4h5s")

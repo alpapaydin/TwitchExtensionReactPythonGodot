@@ -1,0 +1,79 @@
+[gd_scene load_steps=7 format=3 uid="uid://bsucscxc6kktm"]
+
+[ext_resource type="Script" path="res://scenes/show/singlepopup/popup.gd" id="1_1buqp"]
+[ext_resource type="FontFile" uid="uid://traj52d5abna" path="res://asset/font/joystix monospace.otf" id="2_a7py2"]
+[ext_resource type="AudioStream" uid="uid://0hik7ibdhovg" path="res://asset/sfx/pop.ogg" id="2_y3ewl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rda5w"]
+bg_color = Color(0.117647, 0.117647, 0.117647, 0.352941)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+expand_margin_left = 5.0
+expand_margin_top = 3.0
+expand_margin_right = 5.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="Animation" id="Animation_rblsm"]
+resource_name = "pop"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.1, 0.1), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("..:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.9, 1.9),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-190, -42), Vector2(-150, -200), Vector2(-150, -400)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_khoyn"]
+_data = {
+"pop": SubResource("Animation_rblsm")
+}
+
+[node name="Popup" type="PanelContainer"]
+offset_left = -190.0
+offset_top = -42.0
+offset_right = -132.0
+offset_bottom = 29.0
+scale = Vector2(0.1, 0.1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_rda5w")
+script = ExtResource("1_1buqp")
+
+[node name="PopupText" type="Label" parent="."]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_a7py2")
+theme_override_font_sizes/font_size = 31
+text = "sa"
+
+[node name="TextAnim" type="AnimationPlayer" parent="PopupText"]
+autoplay = "pop"
+libraries = {
+"": SubResource("AnimationLibrary_khoyn")
+}
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_y3ewl")
+volume_db = -13.921
+
+[connection signal="animation_finished" from="PopupText/TextAnim" to="." method="_on_text_anim_animation_finished"]
