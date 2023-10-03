@@ -49,6 +49,12 @@ func _process(_delta):
 func resMe():
 	Twitch.popup("!res")
 
+func sendFireball(sender, _dmg):
+	var fireballScene = preload("res://scenes/whale/attacks/projectile.tscn")
+	var fireball = fireballScene.instantiate()
+	fireball.sender = sender
+	$mouthsocket.add_child(fireball)
+
 func attackPulse(radius, _damage, effect):
 	var destroyed = 0
 	var vfxscene = load("res://scenes/show/vfx/"+effect+".tscn")
