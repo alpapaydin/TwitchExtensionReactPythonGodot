@@ -185,11 +185,6 @@ func get_token() -> void:
 	if (scopes.size() > 0):
 		scope += scopes[scopes.size() - 1]
 	scope = scope.uri_encode()
-	print("https://id.twitch.tv/oauth2/authorize
-	?response_type=code
-	&client_id=" + client_id +
-	"&redirect_uri=http://localhost:18297
-	&scope=" + scope)
 	OS.shell_open("https://id.twitch.tv/oauth2/authorize
 	?response_type=code
 	&client_id=" + client_id +

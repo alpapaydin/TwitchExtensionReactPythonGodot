@@ -22,7 +22,7 @@ button_names = [
     "buy",
     "sa",
     "chatall",
-    "dc",
+    "fireball",
 ]
 
 async def send_message(message):

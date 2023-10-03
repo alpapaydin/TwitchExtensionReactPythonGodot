@@ -1,34 +1,39 @@
-[gd_scene load_steps=9 format=3 uid="uid://cnt6oanynlhqm"]
+[gd_scene load_steps=10 format=3 uid="uid://cnt6oanynlhqm"]
 
 [ext_resource type="Script" path="res://scenes/whale/attacks/Projectile.gd" id="1_a2jkq"]
+[ext_resource type="Texture2D" uid="uid://du8y8ouk0qk0j" path="res://scenes/whale/fireball.png" id="2_ff5g3"]
 [ext_resource type="FontFile" uid="uid://traj52d5abna" path="res://asset/font/joystix monospace.otf" id="4_865vf"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_5icsh"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_lo42p"]
+atlas = ExtResource("2_ff5g3")
 region = Rect2(0, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_k3ts3"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ixqsp"]
+atlas = ExtResource("2_ff5g3")
 region = Rect2(16, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_eg0uh"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_nskr8"]
+atlas = ExtResource("2_ff5g3")
 region = Rect2(0, 16, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_uybug"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_bhr7d"]
+atlas = ExtResource("2_ff5g3")
 region = Rect2(16, 16, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_dhvne"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5icsh")
+"texture": SubResource("AtlasTexture_lo42p")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_k3ts3")
+"texture": SubResource("AtlasTexture_ixqsp")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_eg0uh")
+"texture": SubResource("AtlasTexture_nskr8")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_uybug")
+"texture": SubResource("AtlasTexture_bhr7d")
 }],
 "loop": true,
 "name": &"default",
@@ -45,7 +50,8 @@ script = ExtResource("1_a2jkq")
 texture_filter = 1
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_dhvne")
-frame_progress = 0.951004
+autoplay = "default"
+frame_progress = 0.289272
 metadata/_aseprite_wizard_config_ = {
 "layer": "",
 "o_ex_p": "",
