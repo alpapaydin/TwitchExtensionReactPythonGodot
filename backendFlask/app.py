@@ -10,7 +10,6 @@ app = cors(app)  # Use cors with Quart
 button_names = [
     "gamehelp",
     "help",
-    "speak",
     "stats",
     "attack",
     "heal",
@@ -44,6 +43,8 @@ async def handle_click():
         print(data)
         button_name = data.get('button')
         user_name = data.get('user', 'Anonymous')
+        if user_name == "Anonymous": 
+            return jsonify(success=False, message="Please allow access to your Twitch ID to interact with the game.")
         handleCommand(button_name, user_name)
         message = f"{user_name}.{button_name}.null"
         response = await send_message(message)  # Await the send_message coroutine
