@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 
-function Popup({ message, onRemove, color }) {
+function Popup({ message, onRemove, buttonColor }) {
   const handleAnimationEnd = () => {
     onRemove();  // Call onRemove when the animation ends
   };
 
-  // Use the passed color for the background of the popup
   const popupStyle = {
-    backgroundColor: color, // This applies the background color
+    backgroundColor: buttonColor, // Set the background color dynamically
   };
 
   return (
@@ -23,20 +22,18 @@ function App() {
   const [buttons, setButtons] = useState([]);
   const [serverResponses, setServerResponses] = useState([]);
   const [userName, setUserName] = useState('Anonymous');
-  const [baseUrl, setBaseUrl] = useState('https://opentun.nl'); // Default URL
-  const [buttonColor, setButtonColor] = useState('#FFFFFF'); // Default button color
+  const [configUrl, setConfigUrl] = useState('https://opentun.nl'); // Default URL
+  const [buttonColor, setButtonColor] = useState('#FFFFFF'); // Default color
 
-  // Fetch buttons from the server
-  const fetchButtons = async () => {
+  const fetchButtons = async (url) => {
     try {
-      const response = await axios.get(`${baseUrl}/buttons`);
+      const response = await axios.get(`${url}/buttons`);
       setButtons(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Get user information from Twitch API
   const getUserInfo = async (clientId, helixToken, userId) => {
     try {
       const response = await axios.get(`https://api.twitch.tv/helix/users?id=${userId}`, {
@@ -51,64 +48,55 @@ function App() {
     }
   };
 
-  // Handle sending a post request to the server
+  useEffect(() => {
+    if (window.Twitch && window.Twitch.ext) {
+      window.Twitch.ext.onAuthorized(auth => {
+        const userId = window.Twitch.ext.viewer.id;
+        getUserInfo(auth.clientId, auth.helixToken, userId);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // This effect will run only once when the component mounts.
+    if (window.Twitch && window.Twitch.ext) {
+      window.Twitch.ext.onAuthorized(auth => {
+        const userId = window.Twitch.ext.viewer.id;
+        getUserInfo(auth.clientId, auth.helixToken, userId);
+      });
+  
+      window.Twitch.ext.configuration.onChanged(() => {
+        let config = window.Twitch.ext.configuration.broadcaster;
+        if (config) {
+          try {
+            config = JSON.parse(config.content);
+            setConfigUrl(config.url || 'https://opentun.nl'); // Fallback to default URL if not set
+            setButtonColor(config.buttonColor || '#FFFFFF'); // Fallback to default color if not set
+            fetchButtons(config.url || 'https://opentun.nl'); // Call fetchButtons with new URL immediately
+          } catch (e) {
+            console.error('Failed to parse configuration:', e);
+          }
+        }
+      });
+    }
+  }, []);
+  
   const sendPostRequest = async (buttonName) => {
     try {
-      const response = await axios.post(`${baseUrl}/hello`, {
+      const response = await axios.post(`${configUrl}/hello`, { // Use dynamic URL from the state
         button: buttonName,
         user: userName
       });
-      setServerResponses(prevResponses => [...prevResponses, response.data.message]);
+      setServerResponses(prevResponses => [...prevResponses, response.data.message]); // Add new message to array
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Debug action for development purposes
-  const debugAction = (buttonName) => {
-    console.log('Debug action triggered by:', buttonName);
-    sendPostRequest(buttonName);
-  };
-
-  // Remove a response from the array of server responses
   const removeResponse = useCallback((messageToRemove) => {
     setServerResponses(prevResponses => prevResponses.filter(message => message !== messageToRemove));
   }, []);
 
-  // Effect hook to initialize and fetch data
-  useEffect(() => {
-    // Declare a variable for the interval ID so it can be cleared later
-    let intervalId;
-  
-    // Listen for authorization and configuration changes from Twitch
-    if (window.Twitch && window.Twitch.ext) {
-      window.Twitch.ext.onAuthorized(auth => {
-        const userId = auth.userId; // Corrected to auth.userId
-        getUserInfo(auth.clientId, auth.token, userId); // Corrected to auth.token
-      });
-  
-      window.Twitch.ext.configuration.onChanged(() => {
-        const config = window.Twitch.ext.configuration.broadcaster || {};
-        if (config.content) {
-          const configData = JSON.parse(config.content);
-          setBaseUrl(configData.url); // Assuming setBaseUrl is a state setter for the base URL
-          setButtonColor(configData.buttonColor); // Assuming setButtonColor is a state setter for the button color
-          fetchButtons(configData.url); // Call fetchButtons with the new base URL
-        }
-      });
-    }
-  
-    // Set up the debug action global reference
-    window.debugAction = debugAction;
-  
-    // Clean-up function to run when the component unmounts
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      delete window.debugAction;
-    };
-  }, []);
-
-  // Render function to output JSX
   return (
     <div className="App">
       <header className="App-header">
@@ -118,18 +106,19 @@ function App() {
               key={buttonName}
               className="button"
               onClick={() => sendPostRequest(buttonName)}
-              style={{ backgroundColor: buttonColor }} // Apply dynamic button color
+              style={{ backgroundColor: buttonColor }} // Set button color dynamically
             >
               {buttonName}
             </button>
           ))}
+          <div style={{ height: '30px' }}></div>
         </div>
         {serverResponses.map((message, index) => (
           <Popup
-            key={`${message}-${index}`}
+            key={`${message}-${index}`} // Create a more unique key
             message={message}
-            onRemove={() => removeResponse(message)}
-            color={buttonColor} // Pass button color to the Popup component
+            onRemove={() => removeResponse(message)} // Pass removeResponse as onRemove prop
+            buttonColor={buttonColor} // Pass the dynamic button color to the Popup
           />
         ))}
       </header>
