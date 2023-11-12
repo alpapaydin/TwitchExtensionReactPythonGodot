@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://cnt6oanynlhqm"]
+[gd_scene load_steps=11 format=3 uid="uid://cnt6oanynlhqm"]
 
 [ext_resource type="Script" path="res://scenes/whale/attacks/Projectile.gd" id="1_a2jkq"]
 [ext_resource type="Texture2D" uid="uid://du8y8ouk0qk0j" path="res://scenes/whale/fireball.png" id="2_ff5g3"]
+[ext_resource type="AudioStream" uid="uid://c2cxycl75jr1o" path="res://asset/sfx/fireballhit.ogg" id="3_6subj"]
 [ext_resource type="FontFile" uid="uid://traj52d5abna" path="res://asset/font/joystix monospace.otf" id="4_865vf"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lo42p"]
@@ -66,6 +67,7 @@ metadata/_aseprite_wizard_config_ = {
 shape = SubResource("CircleShape2D_8xomy")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_6subj")
 autoplay = true
 
 [node name="TrailLabel" type="Label" parent="."]
