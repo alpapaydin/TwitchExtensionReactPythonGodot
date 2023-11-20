@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dk5dxxpipcvql"]
+[gd_scene load_steps=8 format=3 uid="uid://dk5dxxpipcvql"]
 
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_2460s"]
 [ext_resource type="Texture2D" uid="uid://cmga2u7plt41p" path="res://asset/img/bg/1b521506-6569-4ccb-994d-cfa2544f61e2.png" id="2_thinh"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scenes/main/websockets/WebSocket.gd" id="3_xhqvk"]
 [ext_resource type="Script" path="res://scenes/main/enemySpawner.gd" id="5_nbjdi"]
 [ext_resource type="PackedScene" uid="uid://03hc1p1xva83" path="res://scenes/enemies/enemybase/enemybase.tscn" id="6_bf15p"]
+[ext_resource type="Script" path="res://addons/nodewebsockets/websocket_client.gd" id="7_s1sjw"]
 
 [node name="main" type="Control"]
 layout_mode = 3
@@ -57,5 +58,12 @@ autostart = true
 wait_time = 10.0
 autostart = true
 
+[node name="WebSocketClient" type="Node" parent="."]
+script = ExtResource("7_s1sjw")
+url_server = "ws://opentun.nl:8765"
+protocols = PackedStringArray()
+extra_headers = PackedStringArray()
+
 [connection signal="timeout" from="interestTimer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="incomeTimer" to="." method="_on_incometimer_timeout"]
+[connection signal="data_received" from="WebSocketClient" to="." method="_on_web_socket_client_data_received"]

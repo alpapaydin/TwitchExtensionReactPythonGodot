@@ -23,3 +23,11 @@ func _on_timer_timeout():
 func _on_incometimer_timeout():
 	Saver._save()
 	Twitch._on_IncomeTimer_timeout()
+
+
+func _on_web_socket_client_data_received(peer, message, is_string):
+	var msg := ""
+	for i in message:
+		msg += char(i)
+	print(msg)
+	var response = Twitch.gotMessage(msg)

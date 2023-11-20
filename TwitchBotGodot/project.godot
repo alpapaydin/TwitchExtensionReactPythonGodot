@@ -36,6 +36,10 @@ window/size/always_on_top=true
 window/stretch/mode="canvas_items"
 window/vsync/vsync_mode=0
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/nodewebsockets/plugin.cfg")
+
 [gui]
 
 theme/custom_font="res://asset/font/Montserrat-ExtraLight.ttf"
