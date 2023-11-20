@@ -9,17 +9,19 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "axios": "^1.5.1",
+    "customize-cra": "^1.0.0",
     "react": "^18.2.0",
+    "react-app-rewired": "^2.2.1",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "react-spring": "^9.7.3",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "HTTPS=true PORT=8080 react-scripts start",
-    "build": "react-scripts build",
+    "start": "HTTPS=true PORT=8080 react-app-rewired start",
+    "build": "react-app-rewired build",
     "postinstall": "sh install_cert.sh",
-    "test": "react-scripts test",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
