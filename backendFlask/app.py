@@ -43,25 +43,6 @@ async def websocket_server(websocket, path):
     connected_clients[websocket] = client_task
     await client_task
 
-connected_clients = {}  # Dictionary to map websockets to tasks
-
-async def client_handler(websocket):
-    try:
-        while True:  # Keep listening for a message from the client
-            message = await websocket.recv()
-            print(f"Received message from client: {message}")
-            # Handle the received message
-    except websockets.exceptions.ConnectionClosed:
-        print("Client connection closed")
-    finally:
-        if websocket in connected_clients:
-            del connected_clients[websocket]
-
-async def websocket_server(websocket, path):
-    client_task = asyncio.create_task(client_handler(websocket))
-    connected_clients[websocket] = client_task
-    await client_task
-
 async def send_message(message):
     if not connected_clients:
         return "No connected clients."
