@@ -24,35 +24,45 @@ button_names = [
     "chatall",
     "dc",
 ]
-connected_clients = {}  # Dictionary to map websockets to tasks
-
+connected_clients = {}  # Maps websockets to tasks
 async def client_handler(websocket):
+    # Each client gets its own queue for responses
+    client_queue = asyncio.Queue()
+    connected_clients[websocket] = client_queue
+
     try:
-        while True:  # Keep listening for a message from the client
+        while True:
             message = await websocket.recv()
             print(f"Received message from client: {message}")
-            # Handle the received message
+            await client_queue.put(message)  # Store the message in the queue
     except websockets.exceptions.ConnectionClosed:
         print("Client connection closed")
     finally:
+        # Remove the client and its queue when the connection is closed
         if websocket in connected_clients:
             del connected_clients[websocket]
 
 async def websocket_server(websocket, path):
-    client_task = asyncio.create_task(client_handler(websocket))
-    connected_clients[websocket] = client_task
-    await client_task
+    await client_handler(websocket)
 
 async def send_message(message):
     if not connected_clients:
         return "No connected clients."
 
-    responses = []
-    for client, task in connected_clients.items():
-        await client.send(message)
-        # Do not call recv() here to avoid conflict with client_handler
+    # Get the first client and its response queue
+    first_client, client_queue = next(iter(connected_clients.items()))
 
-    return "Messages sent to all clients."
+    # Send the message to the first client
+    await first_client.send(message)
+
+    try:
+        # Wait for a response from the first client
+        response = await asyncio.wait_for(client_queue.get(), timeout=10)
+        return response
+    except asyncio.TimeoutError:
+        return "No response received from the first client."
+
+
 
 @app.route('/buttons', methods=['GET'])
 async def get_buttons():
