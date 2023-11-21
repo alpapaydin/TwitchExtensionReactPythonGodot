@@ -30,4 +30,5 @@ func _on_web_socket_client_data_received(peer, message, is_string):
 	for i in message:
 		msg += char(i)
 	print(msg)
-	var response = Twitch.gotMessage(msg)
+	var response = Twitch.gotMessage(msg) ## return response!!!!!!!!
+	peer.send_text(response)
