@@ -1,35 +1,7 @@
-extends Gift
+extends Node
 
 func _ready() -> void:
-	cmd_no_permission.connect(no_permission)
-	chat_message.connect(on_chat)
-	event.connect(on_event)
-	unhandled_message.connect(unhandledMessage)
-	# I use a file in the working directory to store auth data
-	# so that I don't accidentally push it to the repository.
-	# Replace this or create a auth file with 3 lines in your
-	# project directory:
-	# <client_id>
-	# <client_secret>
-	# <initial channel>
-	var authfile := FileAccess.open("res://auth", FileAccess.READ)
-	client_id = authfile.get_line()
-	client_secret = authfile.get_line()
-	var initial_channel = authfile.get_line()
-
-	# When calling this method, a browser will open.
-	# Log in to the account that should be used.
-	await(authenticate(client_id, client_secret))
-	var success = await(connect_to_irc())
-	if (success):
-		request_caps()
-		join_channel(initial_channel)
-	await(connect_to_eventsub())
-	# Refer to https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/ for details on
-	# what events exist, which API versions are available and which conditions are required.
-	# Make sure your token has all required scopes for the event.
-	subscribe_event("channel.follow", 2, {"broadcaster_user_id": user_id, "moderator_user_id": user_id})
-###
+	pass
 
 func unhandledMessage(message, _tags):
 	print("TEST::: "+message)
@@ -103,13 +75,14 @@ func on_chat(data : SenderData, msg : String) -> void:
 		if !modified_str.size()>1:
 			modified_str.append("null")
 		var response = gotMessage(data.user+"."+modified_str[0]+"."+modified_str[1])
-		chat(response)
+		#chat(response)
 		print(data.user+"."+modified_str[0]+"."+modified_str[1])
 		
 	#%ChatContainer.put_chat(data, msg)
 
 func no_permission(_cmd_info : CommandInfo) -> void:
-	chat("NO PERMISSION!")
+	pass
+	#chat("NO PERMISSION!")
 
 #RECEIVE FROM TWITCH BOT
 func gotMessage(msg):
@@ -126,7 +99,8 @@ func gotMessage(msg):
 				return sender+" you need "+str(command_cost[command])+"$ to "+command
 			match command:
 				"chatall":
-					chatAll(chatters)
+					pass
+					#chatAll(chatters)
 				"sa":
 					popup("as "+sender)
 					return "as "+sender

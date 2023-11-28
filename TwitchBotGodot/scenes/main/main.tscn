@@ -15,6 +15,7 @@ mouse_filter = 2
 script = ExtResource("1_2460s")
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 z_index = -6
 layout_mode = 1
 anchors_preset = 15
